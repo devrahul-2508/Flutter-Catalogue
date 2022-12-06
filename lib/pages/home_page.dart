@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'package:flutter_catalogue/widgets/themes.dart';
+import 'package:velocity_x/velocity_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_catalogue/widgets/drawer.dart';
@@ -38,40 +39,99 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Catalogue App"),
+      backgroundColor: MyTheme.creamColor,
+      body: SafeArea(
+        child: Container(
+            padding: Vx.m32,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatalogHeader(),
+                if (CatalogModel.items.isNotEmpty)
+                  CatalogList().expand()
+                else
+                  Center(
+                    child: CircularProgressIndicator(),
+                  )
+              ],
+            )),
       ),
-      body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: (CatalogModel.items.isNotEmpty)
-              ? GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16),
-                  itemCount: CatalogModel.items.length,
-                  itemBuilder: (context, index) {
-                    final item = CatalogModel.items[index];
-                    return Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: GridTile(
-                            header: Container(
-                              child: Text(
-                                item.name,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              padding: EdgeInsets.all(12),
-                              decoration:
-                                  BoxDecoration(color: Colors.deepPurple),
-                            ),
-                            footer: Text(item.price.toString()),
-                            child: Image.network(item.image)));
-                  })
-              : Center(child: CircularProgressIndicator())),
-      drawer: MyDrawer(),
     );
+  }
+}
+
+class CatalogHeader extends StatelessWidget {
+  const CatalogHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        "Catalog App".text.xl5.bold.color(MyTheme.darkBluishColor).make(),
+        "Trending Products".text.xl2.make()
+      ],
+    );
+  }
+}
+
+class CatalogList extends StatelessWidget {
+  const CatalogList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: CatalogModel.items.length,
+        itemBuilder: (context, index) {
+          final catalog = CatalogModel.items[index];
+          return CatalogItem(catalog: catalog);
+        });
+  }
+}
+
+class CatalogItem extends StatelessWidget {
+  final Item catalog;
+  const CatalogItem({super.key, required this.catalog});
+
+  @override
+  Widget build(BuildContext context) {
+    return VxBox(
+        child: Row(
+      children: [
+        Image.network(catalog.image)
+            .box
+            .p8
+            .rounded
+            .color(MyTheme.creamColor)
+            .make()
+            .p16(),
+        Expanded(
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            catalog.name.text.lg.bold.color(MyTheme.darkBluishColor).make(),
+            catalog.desc.text.textStyle(context.captionStyle).make(),
+            5.heightBox,
+            ButtonBar(
+              alignment: MainAxisAlignment.spaceBetween,
+              buttonPadding: Vx.mOnly(right: 10),
+              children: [
+                "\$${catalog.price}".text.xl.bold.make(),
+                ElevatedButton(
+                    onPressed: () {},
+                    child: "Buy".text.make(),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(MyTheme.darkBluishColor),
+                      shape: MaterialStateProperty.all(StadiumBorder()),
+                    ))
+              ],
+            )
+          ],
+        ))
+      ],
+    )).white.roundedLg.square(150).make().py16();
   }
 }

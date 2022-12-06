@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_catalogue/widgets/themes.dart';
+import 'package:velocity_x/velocity_x.dart';
+
+import '../models/catalogue.dart';
+
+class HomeDetailPage extends StatelessWidget {
+  final Item catalog;
+  const HomeDetailPage({super.key, required this.catalog});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(),
+        backgroundColor: MyTheme.creamColor,
+        bottomNavigationBar: ButtonBar(
+          alignment: MainAxisAlignment.spaceBetween,
+          buttonPadding: Vx.mOnly(right: 10),
+          children: [
+            "\$${catalog.price}".text.xl4.bold.red800.make(),
+            ElevatedButton(
+                onPressed: () {},
+                child: "Buy".text.make(),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(MyTheme.darkBluishColor),
+                  shape: MaterialStateProperty.all(StadiumBorder()),
+                )).wh(100, 50)
+          ],
+        ).p16(),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Hero(
+                      tag: Key(catalog.id.toString()),
+                      child: Image.network(catalog.image))
+                  .h32(context),
+              Expanded(
+                  child: VxArc(
+                height: 20.0,
+                arcType: VxArcType.CONVEY,
+                edge: VxEdge.TOP,
+                child: Container(
+                  width: context.screenWidth,
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      catalog.name.text.xl4.bold
+                          .color(MyTheme.darkBluishColor)
+                          .make(),
+                      catalog.desc.text.xl
+                          .textStyle(context.captionStyle)
+                          .make(),
+                    ],
+                  ).py32(),
+                ),
+              ))
+            ],
+          ),
+        ));
+  }
+}

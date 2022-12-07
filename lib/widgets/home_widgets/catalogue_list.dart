@@ -13,7 +13,7 @@ class CatalogList extends StatelessWidget {
         shrinkWrap: true,
         itemCount: CatalogModel.items.length,
         itemBuilder: (context, index) {
-          final catalog = CatalogModel.items[index];
+          final catalog = CatalogModel.getByPosition(index);
           return InkWell(
               onTap: () => Navigator.push(
                   context,
@@ -34,14 +34,14 @@ class CatalogItem extends StatelessWidget {
         child: Row(
       children: [
         Hero(
-          tag: Key(catalog.id.toString()),
-          child: CatalogImage(image: catalog.image)),
+            tag: Key(catalog.id.toString()),
+            child: CatalogImage(image: catalog.image)),
         Expanded(
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            catalog.name.text.lg.bold.color(MyTheme.darkBluishColor).make(),
+            catalog.name.text.lg.bold.color(context.accentColor).make(),
             catalog.desc.text.textStyle(context.captionStyle).make(),
             5.heightBox,
             ButtonBar(
@@ -54,7 +54,7 @@ class CatalogItem extends StatelessWidget {
                     child: "Buy".text.make(),
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(MyTheme.darkBluishColor),
+                          MaterialStateProperty.all(context.theme.buttonColor),
                       shape: MaterialStateProperty.all(StadiumBorder()),
                     ))
               ],
@@ -62,7 +62,7 @@ class CatalogItem extends StatelessWidget {
           ],
         ))
       ],
-    )).white.roundedLg.square(150).make().py16();
+    )).color(context.cardColor).roundedLg.square(150).make().py16();
   }
 }
 
@@ -76,7 +76,7 @@ class CatalogImage extends StatelessWidget {
         .box
         .p8
         .rounded
-        .color(MyTheme.creamColor)
+        .color(context.canvasColor)
         .make()
         .p16()
         .w40(context);

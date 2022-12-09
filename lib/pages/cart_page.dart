@@ -5,6 +5,8 @@ import 'package:flutter_catalogue/models/cart.dart';
 import 'package:flutter_catalogue/widgets/themes.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import '../core/store.dart';
+
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
@@ -27,18 +29,22 @@ class CartTotal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _cart = CartModel();
+    final CartModel _cart = (VxState.store as MyStore).cart;
 
     return SizedBox(
       height: 200,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          "\$${_cart.totalPrice.toString()}"
-              .text
-              .xl5
-              .color(context.theme.accentColor)
-              .make(),
+          VxConsumer(
+              mutations: {DeleteMutation},
+              builder: (context, _, status) {
+                return "\$${_cart.totalPrice.toString()}"
+                    .text
+                    .xl5
+                    .color(context.theme.accentColor)
+                    .make();
+              }),
           30.widthBox,
           ElevatedButton(
                   onPressed: () {
@@ -57,10 +63,11 @@ class CartTotal extends StatelessWidget {
 }
 
 class CartList extends StatelessWidget {
-  final _cart = CartModel();
+  final CartModel _cart = (VxState.store as MyStore).cart;
 
   @override
   Widget build(BuildContext context) {
+    VxState.watch(context, on: [DeleteMutation]);
     return _cart.items.isEmpty
         ? "Nothing to show".text.makeCentered()
         : ListView.builder(
@@ -71,7 +78,7 @@ class CartList extends StatelessWidget {
                 trailing: IconButton(
                   icon: Icon(Icons.remove_circle_outline),
                   onPressed: () {
-                    _cart.remove(_cart.items[index]);
+                    DeleteMutation(_cart.items[index]);
                   },
                 ),
                 title: _cart.items[index].name.text.make(),

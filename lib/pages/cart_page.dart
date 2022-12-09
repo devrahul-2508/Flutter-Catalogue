@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_catalogue/models/cart.dart';
 import 'package:flutter_catalogue/widgets/themes.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -26,19 +27,28 @@ class CartTotal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _cart = CartModel();
+
     return SizedBox(
       height: 200,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          "\$999".text.xl5.color(context.theme.accentColor).make(),
+          "\$${_cart.totalPrice.toString()}"
+              .text
+              .xl5
+              .color(context.theme.accentColor)
+              .make(),
           30.widthBox,
           ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: "Buying not supported yet".text.make()));
+                  },
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all(context.theme.buttonColor)),
-                  child: "Buy".text.color(context.theme.accentColor).make())
+                  child: "Buy".text.make())
               .w32(context)
         ],
       ),
@@ -46,27 +56,26 @@ class CartTotal extends StatelessWidget {
   }
 }
 
-class CartList extends StatefulWidget {
-  const CartList({super.key});
+class CartList extends StatelessWidget {
+  final _cart = CartModel();
 
-  @override
-  State<CartList> createState() => _CartListState();
-}
-
-class _CartListState extends State<CartList> {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: Icon(Icons.done),
-            trailing: IconButton(
-              icon: Icon(Icons.remove_circle_outline),
-              onPressed: () {},
-            ),
-            title: "Item1".text.make(),
-          );
-        });
+    return _cart.items.isEmpty
+        ? "Nothing to show".text.makeCentered()
+        : ListView.builder(
+            itemCount: _cart.items.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Icon(Icons.done),
+                trailing: IconButton(
+                  icon: Icon(Icons.remove_circle_outline),
+                  onPressed: () {
+                    _cart.remove(_cart.items[index]);
+                  },
+                ),
+                title: _cart.items[index].name.text.make(),
+              );
+            }).p20();
   }
 }
